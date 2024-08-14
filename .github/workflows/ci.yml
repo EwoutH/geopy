@@ -9,9 +9,9 @@ jobs:
     name: Linting
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Python 3
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: '3.x'
     - name: Install dependencies
@@ -24,9 +24,9 @@ jobs:
     name: RST (README.rst + docs) syntax check
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Python 3
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: '3.x'
     - name: Install dependencies
@@ -37,21 +37,22 @@ jobs:
 
   test_local:
     runs-on: ubuntu-latest
-    continue-on-error: ${{ matrix.experimental }}
+    # continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
       matrix: # &test-matrix
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', 'pypy-3.7']
-        experimental: [false]
-        include:
-          - python-version: '3.13-dev'
-            experimental: true
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13', 'pypy-3.7']
+        # experimental: [false]
+        # include:
+        #   - python-version: '3.14'
+        #     experimental: true
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
+        allow-prereleases: true
     - name: Install dependencies
       run: |
         python3 -m pip install --upgrade pip setuptools
@@ -62,22 +63,23 @@ jobs:
     if: ${{ github.event_name != 'pull_request' }}
     needs: [lint, check-docs, test_local]
     runs-on: ubuntu-latest
-    continue-on-error: ${{ matrix.experimental }}
+    # continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
       matrix: # *test-matrix  https://github.com/actions/runner/issues/1182
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', 'pypy-3.7']
-        experimental: [false]
-        include:
-          - python-version: '3.13-dev'
-            experimental: true
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13', 'pypy-3.7']
+        # experimental: [false]
+        # include:
+        #   - python-version: '3.14'
+        #     experimental: true
       max-parallel: 2  # Reduce load on the geocoding services
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
+        allow-prereleases: true
     - name: Install dependencies
       run: |
         python3 -m pip install --upgrade pip setuptools
